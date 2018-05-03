@@ -17,6 +17,7 @@ size = a[1] / n
 m = a[0] / size
 m = int(m)
 size = int(size)
+hsize = int(size/2)
 
 img = cv2.resize(img, (size * n, size * m))
 
