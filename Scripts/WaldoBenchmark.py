@@ -32,7 +32,7 @@ for i in range(n):
         
 for i in range(n-1):
     for j in range(m-1):
-        cr = img[(j * size+size/2):((j + 1) * size+size/2),( i * size+size/2):((i + 1) * size+size/2)]
+        cr = img[(j * size+hsize):((j + 1) * size+hsize),( i * size+hsize):((i + 1) * size+hsize)]
         cr = cv2.resize(cr, (ImgSize, ImgSize), interpolation=cv2.INTER_CUBIC)
         cr = cv2.cvtColor(cr, cv2.COLOR_BGR2RGB)
         picso.append([cr])
@@ -59,7 +59,7 @@ for i in range(n):
 
 for i in range(n-1):
     for j in range(m-1):
-        img[(j * size+size/2):((j + 1) * size+size/2),( i * size+size/2):((i + 1) * size+size/2)] = img[(j * size+size/2):((j + 1) * size+size/2),( i * size+size/2):((i + 1) * size+size/2)] * model.predict(picso[i * m + j])
+        img[(j * size+hsize):((j + 1) * size+hsize),( i * size+hsize):((i + 1) * size+hsize)] = img[(j * size+hsize):((j + 1) * size+hsize),( i * size+hsize):((i + 1) * size+hsize)] * model.predict(picso[i * m + j])
 
 
 img = cv2.resize(img, (0, 0), fx=0.4, fy=0.4)
