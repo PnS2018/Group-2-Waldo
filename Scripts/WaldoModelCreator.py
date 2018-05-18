@@ -14,11 +14,11 @@ import matplotlib.pyplot as plt
 #Directory of Dataset. Has to have a folder "waldo" and "not waldo" with the pictures
 DataDir = r"C:\Users\Thomacdebabo\Downloads\Hey-Waldo-master\Hey-Waldo-master\64"
 #Model will be saved under [ModelName].hdf5
-ModelName = "WaldoS2"
+ModelName = "WaldoBig5"
 #determine how large your input pictures should be (if pictures in the Dataset don't have this size, they will be resized)
 ImgSize = 64
 #Ratio defines how many non Waldos per Waldos are used for training
-ratio = 2
+ratio = 1
 
 #Dataset and DatasetWaldo are two lists where Waldos and non Waldos respectively are stored 
 #(Dataset --> non Waldos / DatasetWaldo --> Waldos)
@@ -40,6 +40,8 @@ for root, dirs, files in os.walk(DataDir+r"\Waldo"):
 
 W = len(DatasetWaldo)
 NW = int(W*ratio)
+
+print(str(W))
 
 i = 1
 
@@ -82,23 +84,56 @@ Target = np.array(Target)
 
 x = Input(shape=(Dataset.shape[1], Dataset.shape[2], Dataset.shape[3]), name="input_layer")
 
-conv1 = Conv2D(filters=50, kernel_size=(3, 3), strides=(3, 3), padding="same")(x) 
+conv1 = Conv2D(filters=50, kernel_size=(5, 5), strides=(3, 3), padding="same")(x) 
 conv1 = Activation("relu")(conv1)
 
-conv2 = Conv2D(filters=25, kernel_size=(2, 2), strides=(2, 2), padding="same")(conv1)
+conv2 = Conv2D(filters=25, kernel_size=(4, 4), strides=(1, 1), padding="same")(conv1)
 conv2 = Activation("relu")(conv2)
 
-conv3 = Conv2D(filters=20, kernel_size=(2, 2), strides=(2, 2), padding="same")(conv2)
+conv3 = Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), padding="same")(conv2)
 conv3 = Activation("relu")(conv3)
 
 dropout = Dropout(rate=0.2)(conv3)
-dropout = Flatten()(dropout)
 
-h1 = Dense(75)(dropout)
+conv4 = Conv2D(filters=50, kernel_size=(4, 4), strides=(2, 2), padding="same")(dropout) 
+conv4 = Activation("relu")(conv4)
+
+conv5 = Conv2D(filters=25, kernel_size=(2, 2), strides=(1, 1), padding="same")(conv4)
+conv5 = Activation("relu")(conv5)
+
+conv6 = Conv2D(filters=20, kernel_size=(2, 2), strides=(1, 1), padding="same")(conv5)
+conv6 = Activation("relu")(conv6)
+
+dropout2 = Dropout(rate=0.2)(conv6)
+
+conv7 = Conv2D(filters=50, kernel_size=(3, 3), strides=(2, 2), padding="same")(dropout2) 
+conv7 = Activation("relu")(conv7)
+
+conv8 = Conv2D(filters=25, kernel_size=(2, 2), strides=(1, 1), padding="same")(conv7)
+conv8 = Activation("relu")(conv8)
+
+conv9 = Conv2D(filters=20, kernel_size=(2, 2), strides=(1, 1), padding="same")(conv8)
+conv9 = Activation("relu")(conv9)
+
+dropout3 = Dropout(rate=0.2)(conv9)
+
+conv10 = Conv2D(filters=50, kernel_size=(2, 2), strides=(2, 2), padding="same")(dropout3) 
+conv10 = Activation("relu")(conv10)
+
+conv11 = Conv2D(filters=25, kernel_size=(2, 2), strides=(1, 1), padding="same")(conv10)
+conv11 = Activation("relu")(conv11)
+
+conv12 = Conv2D(filters=20, kernel_size=(3, 3), strides=(1, 1), padding="same")(conv11)
+conv12 = Activation("relu")(conv12)
+
+dropout4 = Dropout(rate=0.4)(conv12)
+dropout4 = Flatten()(dropout4)
+
+h1 = Dense(75)(dropout4)
 h1 = Activation("relu")(h1)
-dropout2 = Dropout(rate=0.5)(h1)
+dropout5 = Dropout(rate=0.5)(h1)
 
-y = Dense(1, name="linear_layer")(dropout2)
+y = Dense(1, name="linear_layer")(dropout5)
 y = Activation("sigmoid")(y)
 
 model = Model(inputs=x, outputs=y)
@@ -119,7 +154,7 @@ datagen = ImageDataGenerator(
 datagen.fit(X)
  
 # fits the model on batches with real-time data augmentation:
-model.fit_generator(datagen.flow(X, Y, batch_size=5),
+model.fit_generator(datagen.flow(X, Y, batch_size=25),
                     steps_per_epoch=100, epochs=10, shuffle = True,
                     validation_data=datagen.flow(X, Y), class_weight={0: 1, 1: ratio})
 
